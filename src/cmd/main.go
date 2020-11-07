@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/calvinzhoufeng/backend-coding-test/ride"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"gorm.io/gorm"
+
 	"github.com/kataras/iris"
+	"gorm.io/driver/sqlite"
 )
 
 func main() {
@@ -14,15 +14,17 @@ func main() {
 	app := New()
 
 	// Open a new connection to our sqlite database.
-	db, err := gorm.Open("sqlite3", "database.db")
+	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 	if err != nil {
 		panic("Failed to open the SQLite database.")
 	}
 
-	// Register APIs
-	ride.NewRideController(app)
+	db.AutoMigrate(&Ride{})
 
-	_ = app.Run(iris.Addr(fmt.Sprintf("%s:%d", commonConfig.Host, commonConfig.Port)))
+	// Register APIs
+	NewController(app, db)
+
+	_ = app.Run(iris.Addr(fmt.Sprintf("%s:%d", "localhost", 8010)))
 }
 
 func New() *iris.Application {
