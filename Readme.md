@@ -34,10 +34,15 @@ There are 3 types of documents:
 3. iris (https://www.iris-go.com/) high-performance web applications and APIs framework
 4. zerolog (https://github.com/rs/zerolog)  A fast and simple logger dedicated to JSON output(Aggregator friendly)
 5. Golint (https://godoc.org/golang.org/x/lint/golint) Lints the Go source files 
+6. CirclesCI integration
+    - Please refer to PR #3 from branch circleci
+    - Each push will trigger a unit test & build into docker, which is configurable, e.g. only PR to main branch is merged, then trigger
 
 ### Pagination 
 
-Pagination sample code can be found in src/ride/reposiory.go in function Paginate
+1. Please refer to PR #2 from branch loadtest
+
+2. Pagination sample code can be found in src/ride/reposiory.go in function Paginate
 
 ### Refactoring
 
@@ -45,11 +50,15 @@ This is ignored since Golang implementation is different from NodeJS. If neccess
 
 ### Security
 
-SQL injection is handled by Golang ORM framework GORM, regarding to the details how SQL injection is handled, please refer to https://gorm.io/docs/security.html.
+1. Please refer to PR #2 from branch loadtest
+
+2. SQL injection is handled by Golang ORM framework GORM, regarding to the details how SQL injection is handled, please refer to https://gorm.io/docs/security.html.
 The rule of thumb is that the Security control should be handled in a separate layer from logic layer, e.g. a middleware
 
 ### Load Testing
-TODO
+
+1. Please refer to PR #2 from branch loadtest
+2. `artillery run load-test.yaml` to trigger the load test
 
 
 
