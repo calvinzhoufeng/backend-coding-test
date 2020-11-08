@@ -21,7 +21,6 @@ go.mod
 .idea
 .vscode
 
-
 # Logs
 logs
 *.log
