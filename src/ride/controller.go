@@ -40,6 +40,7 @@ func NewController(app *iris.Application, db *gorm.DB) *RideController {
 // @Failure 400
 // @router /rides [get]
 func (c *RideController) GetRides(ctx iris.Context) {
+	log.Debug().Msg("Get all rides")
 	page, _ := ctx.Params().GetInt("page")
 	pageSize, _ := ctx.Params().GetInt("pageSize")
 
