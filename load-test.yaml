@@ -1,0 +1,28 @@
+config:
+  target: "http://localhost:8010"
+  phases:
+    - duration: 10
+      arrivalRate: 10
+
+scenarios:
+  - flow:
+      - loop:
+          - post:
+              url: "/rides"
+              json:
+                startLat: 10
+                startLong: 1
+                endLat: 89
+                endLong: 81
+                riderName: "Jerry"
+                driverName: "Tom"
+                driverVehicle: "SAL1234X"
+          - get:
+              # the value of count comes from a JavaScript function 'setCount' declared in count.js   
+              url: "/rides"
+              capture:
+              # capturing responce using reg expression
+                - regexp: "[^]*"
+                  as: "msg"
+          - log: "msg= {{msg}}"
+        count: 20
