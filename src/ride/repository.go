@@ -26,6 +26,7 @@ func (r *Repository) CreateRide(ride Ride) error {
 	return nil
 }
 
+// GetRides Get all rides from db per page number and pagesize
 func (r *Repository) GetRides(page int, pageSize int) ([]Ride, error) {
 	var rides []Ride
 	r.DB.Scopes(Paginate(page, pageSize)).Find(&rides)
