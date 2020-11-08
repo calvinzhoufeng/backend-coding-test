@@ -1,8 +1,6 @@
 package ride
 
 import (
-	"time"
-
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 )
@@ -18,7 +16,7 @@ func NewRepository(db *gorm.DB) *Repository {
 }
 
 func (r *Repository) CreateRide(ride Ride) error {
-	ride.created = time.Now()
+	log.Debug().Msgf("to be added %v", ride)
 
 	if dbc := r.DB.Create(&ride); dbc.Error != nil {
 		return dbc.Error
@@ -35,6 +33,11 @@ func (r *Repository) GetRides(page int, pageSize int) ([]Ride, error) {
 	return rides, r.DB.Error
 }
 
+// Paginate The generic pagination function
+// @Param	page - optional - page number of the query
+// 			pageSize - optional - page size of the query
+// @Success object array
+// @Failure DB.error
 func Paginate(page int, pageSize int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if page == 0 {

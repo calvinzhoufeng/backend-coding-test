@@ -9,28 +9,28 @@ import (
 
 type Ride struct {
 	gorm.Model
-	Id int64 `json:"id" xorm:"'id' pk"`
+	ID int64 `gorm:"primaryKey;autoIncrement"`
 
-	startLat  decimal.Decimal `json:"startLat"xorm:"'startLat'"`
-	startLong decimal.Decimal `json:"startLong"xorm:"'startLong'"`
-	endLat    decimal.Decimal `json:"endLat"xorm:"'endLat'"`
-	endLong   decimal.Decimal `json:"endLong"xorm:"'endLong'"`
+	StartLat  decimal.Decimal `gorm:"type:decimal(7,6);"`
+	StartLong decimal.Decimal `gorm:"type:decimal(7,6);"`
+	EndLat    decimal.Decimal `gorm:"type:decimal(7,6);"`
+	EndLong   decimal.Decimal `gorm:"type:decimal(7,6);"`
 
-	riderName     string    `json:"riderName"xorm:"'riderName'"`
-	driverName    string    `json:"driverName"xorm:"'driverName'"`
-	driverVehicle string    `json:"driverVehicle"xorm:"'driverVehicle'"`
-	created       time.Time `json:"created"xorm:"'created'"`
+	RiderName     string
+	DriverName    string
+	DriverVehicle string
+	Created       time.Time `gorm:"autoCreateTime"`
 }
 
 type CreateRideRequest struct {
-	startLat  decimal.Decimal `json:"startLat"`
-	startLong decimal.Decimal `json:"startLong"`
-	endLat    decimal.Decimal `json:"endLat"`
-	endLong   decimal.Decimal `json:"endLong"`
+	StartLat  decimal.Decimal `json:"startLat"`
+	StartLong decimal.Decimal `json:"startLong"`
+	EndLat    decimal.Decimal `json:"endLat"`
+	EndLong   decimal.Decimal `json:"endLong"`
 
-	riderName     string `json:"riderName"`
-	driverName    string `json:"driverName"`
-	driverVehicle string `json:"driverVehicle"`
+	RiderName     string `json:"riderName"`
+	DriverName    string `json:"driverName"`
+	DriverVehicle string `json:"driverVehicle"`
 }
 
 /**

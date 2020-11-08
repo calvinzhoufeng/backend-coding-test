@@ -3,6 +3,7 @@ package ride
 import (
 	"github.com/kataras/iris"
 	"github.com/rs/zerolog/log"
+	"github.com/shopspring/decimal"
 
 	"gorm.io/gorm"
 )
@@ -24,7 +25,7 @@ func NewController(app *iris.Application, db *gorm.DB) *RideController {
 
 	// List down all services exposed
 	c.app.Get("/rides", c.GetRides)
-	c.app.Get("/rides/{id}", c.GetRideById)
+	c.app.Get("/ride/{id}", c.GetRideById)
 
 	c.app.Post("rides", c.AddRides)
 
@@ -33,33 +34,49 @@ func NewController(app *iris.Application, db *gorm.DB) *RideController {
 	return c
 }
 
-// @Title GetRides
-// @Description Get all rides
+// GetRides Get all rides
 // @Param
 // @Success 200 []Rides
 // @Failure 400
 // @router /rides [get]
 func (c *RideController) GetRides(ctx iris.Context) {
+	page, _ := ctx.Params().GetInt("page")
+	pageSize, _ := ctx.Params().GetInt("pageSize")
+
+	rides, err := c.repo.GetRides(page, pageSize)
+
+	if err != nil {
+		ctx.StatusCode(iris.StatusInternalServerError)
+		_, _ = ctx.JSON(&Response{
+			Success: false,
+			Data: Err{
+				Code:    "SERVER_ERROR",
+				Message: "Unknown error",
+			},
+		})
+		return
+	}
 
 	ctx.StatusCode(iris.StatusOK)
 	_, _ = ctx.JSON(&Response{
 		Success: true,
-		Data:    "Healthy",
+		Data:    rides,
 	})
 	return
 }
 
-/**
- * Get a ride by Id
- * @method GET
- */
+// GetRideById  Get a ride by ID
+// @Param rideId
+// @Success 200 Ride
+// @Failure 400
+// @router /rides [get]
 func (c *RideController) GetRideById(ctx iris.Context) {
 	id := ctx.Params().Get("id")
 
 	var ride Ride
 	c.DB.First(&ride, "id=?", id)
 
-	if ride.Id == 0 {
+	if ride.ID == 0 {
 		ctx.StatusCode(iris.StatusBadRequest)
 		_, _ = ctx.JSON(&Response{
 			Success: false,
@@ -71,7 +88,7 @@ func (c *RideController) GetRideById(ctx iris.Context) {
 		return
 	}
 
-	log.Debug().Int64("rideId", ride.Id).Msg("Found a ride")
+	log.Debug().Int64("rideId", ride.ID).Msg("Found a ride")
 
 	ctx.StatusCode(iris.StatusOK)
 	_, _ = ctx.JSON(&Response{
@@ -81,10 +98,11 @@ func (c *RideController) GetRideById(ctx iris.Context) {
 	return
 }
 
-/**
- * Add a ride
- * @method POST
- */
+// AddRides Add a new ride
+// @Param &Ride{}
+// @Success 200 Ride
+// @Failure 400
+// @router /rides [post]
 func (c *RideController) AddRides(ctx iris.Context) {
 	var createRideRequest CreateRideRequest
 	if err := ctx.ReadJSON(&createRideRequest); err != nil {
@@ -100,27 +118,29 @@ func (c *RideController) AddRides(ctx iris.Context) {
 	}
 
 	// TODO: Other validations are skipped due to time constraits
-	// if createRideRequest.startLat < -90 || createRideRequest.endLat > 90 || crecreateRideRequest.startLong < -180 || createRideRequest.startLong > 180 {
-	// 	ctx.StatusCode(iris.StatusBadRequest)
-	// 	_, _ = ctx.JSON(&Response{
-	// 		Success: false,
-	// 		Data: Err{
-	// 			Code:    "003",
-	// 			Message: "Start latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively",
-	// 		},
-	// 	})
-	// 	return
-	// }
+	if createRideRequest.StartLat.LessThan(decimal.NewFromInt(-90)) || createRideRequest.EndLat.GreaterThan(decimal.NewFromInt(90)) {
+		ctx.StatusCode(iris.StatusBadRequest)
+		_, _ = ctx.JSON(&Response{
+			Success: false,
+			Data: Err{
+				Code:    "003",
+				Message: "Start latitude and longitude must be between -90 - 90 and -180 to 180 degrees respectively",
+			},
+		})
+		return
+	}
 
 	ride := Ride{
-		startLat:  createRideRequest.startLat,
-		endLat:    createRideRequest.endLat,
-		startLong: createRideRequest.startLong,
-		endLong:   createRideRequest.endLong,
+		StartLat:  createRideRequest.StartLat,
+		EndLat:    createRideRequest.EndLat,
+		StartLong: createRideRequest.StartLong,
+		EndLong:   createRideRequest.EndLong,
 
-		driverName: createRideRequest.driverName,
-		riderName:  createRideRequest.riderName,
+		DriverName: createRideRequest.DriverName,
+		RiderName:  createRideRequest.RiderName,
 	}
+	log.Debug().Msgf("controller to be added %v %s", ride, ride.RiderName)
+	log.Debug().Msgf("controller to be added %s", ride.RiderName)
 
 	c.repo.CreateRide(ride)
 
