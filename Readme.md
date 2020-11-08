@@ -26,6 +26,10 @@ There are 3 types of documents:
 ### Implement Tooling
 
 1. Golang (Go Core/Module/Test) Programming language with testing, module management and documentation tools
+    - Ensure GOMODULE is turned on for compile and build, and module will be automatically downloaded
+    - Go test will be triggered for every push
+    - Coverage report is generated for each go test executed 
+    - Go lint is triggered manually `golint src/ride/`
 2. gorm (https://gorm.io/)  The ORM library for Golang
 3. iris (https://www.iris-go.com/) high-performance web applications and APIs framework
 4. zerolog (https://github.com/rs/zerolog)  A fast and simple logger dedicated to JSON output(Aggregator friendly)
