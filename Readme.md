@@ -36,7 +36,7 @@ There are 3 types of documents:
 5. Golint (https://godoc.org/golang.org/x/lint/golint) Lints the Go source files 
 6. CirclesCI integration
     - Please refer to PR #3 and #4 from branch circleci
-    - Each push will trigger a unit test & build into docker, which is configurable, e.g. only PR to main branch is merged, then trigger
+    - Each push will trigger a unit test & build into docker, which is configurable, e.g. only main branch is pushed or scheduler
 
 ### Pagination 
 
@@ -106,7 +106,25 @@ Please implement the following tooling:
 
 1. `eslint` - for linting
 2. `nyc` - for code coverage
-3. `pre-push` - for git pre push hook running tests
+3. `pre-push` - for git pre push hook running tests - please note that pre-push hook is ignored in git repo, here are some code snippets:
+    ```
+    # git test pre-push hook
+    # .git/hooks/pre-push 
+    #!/bin/bash
+    CMD="go test -coverprofile cover.out -v src/ride/*.go"
+    # Run test and return if failed
+    printf "Running gotest..."
+    $CMD
+    RESULT=$?
+    if [ $RESULT -ne 0 ]; then
+    echo >&2 "$RESULT"
+    echo >&2 "FAILED $CMD"
+    exit 1
+    fi
+
+    exit 0
+    ```
+
 4. `winston` - for logging
 
 #### Success Criteria
