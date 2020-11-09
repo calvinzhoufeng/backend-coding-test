@@ -19,7 +19,7 @@ The goal of this project is to setup and complete all tasks assigned using a pur
 There are 3 types of documents:
 
 1. This README file as a guide including the general info and setup
-2. `godoc -http=localhost:6060` To check the go code documentation in HTML, go to localhost:6060/pkg/ride to see details
+2. `godoc -http=localhost:6060` To check the go code documentation in HTML, go to http://localhost:6060/pkg/go/src/ride/ to see details
 3. `go test -coverprofile cover.out -v src/ride/*.go` To generate raw coverage report for unit testing
    `go tool cover -html=cover.out -o cover.html` To convert the raw coverage report into html format
 
