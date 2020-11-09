@@ -35,7 +35,7 @@ There are 3 types of documents:
 4. zerolog (https://github.com/rs/zerolog)  A fast and simple logger dedicated to JSON output(Aggregator friendly)
 5. Golint (https://godoc.org/golang.org/x/lint/golint) Lints the Go source files 
 6. CirclesCI integration
-    - Please refer to PR #3 from branch circleci
+    - Please refer to PR #3 and #4 from branch circleci
     - Each push will trigger a unit test & build into docker, which is configurable, e.g. only PR to main branch is merged, then trigger
 
 ### Pagination 
