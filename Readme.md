@@ -19,7 +19,7 @@ The goal of this project is to setup and complete all tasks assigned using a pur
 There are 3 types of documents:
 
 1. This README file as a guide including the general info and setup
-2. `godoc -http=localhost:6060` To check the go code documentation in HTML, go to localhost:6060/pkg/ride to see details
+2. `godoc -http=localhost:6060` To check the go code documentation in HTML, go to http://localhost:6060/pkg/go/src/ride/ to see details
 3. `go test -coverprofile cover.out -v src/ride/*.go` To generate raw coverage report for unit testing
    `go tool cover -html=cover.out -o cover.html` To convert the raw coverage report into html format
 
@@ -35,7 +35,7 @@ There are 3 types of documents:
 4. zerolog (https://github.com/rs/zerolog)  A fast and simple logger dedicated to JSON output(Aggregator friendly)
 5. Golint (https://godoc.org/golang.org/x/lint/golint) Lints the Go source files 
 6. CirclesCI integration
-    - Please refer to PR #3 from branch circleci
+    - Please refer to PR #3 and #4 from branch circleci
     - Each push will trigger a unit test & build into docker, which is configurable, e.g. only PR to main branch is merged, then trigger
 
 ### Pagination 

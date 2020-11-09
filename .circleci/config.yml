@@ -15,3 +15,13 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: go test -v src/ride/*.go
       - run: GO111MODULE=on go build src/cmd/main.go
+
+workflows:
+  version: 2
+  build-push:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
