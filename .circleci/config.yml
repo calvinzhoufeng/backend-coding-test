@@ -18,7 +18,7 @@ jobs:
 
 workflows:
   version: 2
-  build-push:
+  build:
     jobs:
       - build:
           filters:
