@@ -22,8 +22,10 @@ func main() {
 
 	db.AutoMigrate(&ride.Ride{})
 
+	repository := ride.NewRepository(db)
+
 	// Register APIs
-	ride.NewController(app, db)
+	ride.NewController(app, repository)
 
 	_ = app.Run(iris.Addr(fmt.Sprintf("%s:%d", "localhost", 8010)))
 }

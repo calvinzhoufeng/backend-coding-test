@@ -5,17 +5,27 @@ import (
 	"gorm.io/gorm"
 )
 
-type Repository struct {
+// Repository is the interface can be used in DI
+type Repository interface {
+	CreateRide(ride Ride) error
+	GetRides(page int, pageSize int) ([]Ride, error)
+	GetRideById(id string) (Ride, error)
+}
+
+// RepositoryImpl is the default implementation of Repository
+type RepositoryImpl struct {
 	DB *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) *Repository {
-	return &Repository{
+// NewNewRepository is the constructor of RepositoryImpl
+func NewRepository(db *gorm.DB) Repository {
+	return &RepositoryImpl{
 		DB: db,
 	}
 }
 
-func (r *Repository) CreateRide(ride Ride) error {
+// CreateRide is to create a new Ride
+func (r *RepositoryImpl) CreateRide(ride Ride) error {
 	log.Debug().Msgf("to be added %v", ride)
 
 	if dbc := r.DB.Create(&ride); dbc.Error != nil {
@@ -27,11 +37,18 @@ func (r *Repository) CreateRide(ride Ride) error {
 }
 
 // GetRides Get all rides from db per page number and pagesize
-func (r *Repository) GetRides(page int, pageSize int) ([]Ride, error) {
+func (r *RepositoryImpl) GetRides(page int, pageSize int) ([]Ride, error) {
 	var rides []Ride
 	r.DB.Scopes(Paginate(page, pageSize)).Find(&rides)
 
 	return rides, r.DB.Error
+}
+
+// GetRide by Id from db
+func (r *RepositoryImpl) GetRideById(id string) (Ride, error) {
+	var ride Ride
+	r.DB.First(&ride, "id=?", id)
+	return ride, r.DB.Error
 }
 
 // Paginate The generic pagination function
