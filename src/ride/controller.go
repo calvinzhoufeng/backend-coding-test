@@ -4,22 +4,19 @@ import (
 	"github.com/kataras/iris"
 	"github.com/rs/zerolog/log"
 	"github.com/shopspring/decimal"
-
-	"gorm.io/gorm"
 )
 
+// RideController allows caller to inject dependencies
 type RideController struct {
 	app  *iris.Application
-	DB   *gorm.DB
-	repo *Repository
+	repo Repository
 }
 
-func NewController(app *iris.Application, db *gorm.DB) *RideController {
-	repository := NewRepository(db)
+// NewController always use dependency injection in this contructor
+func NewController(app *iris.Application, repository Repository) *RideController {
 
 	c := &RideController{
 		app:  app,
-		DB:   db,
 		repo: repository,
 	}
 
@@ -74,8 +71,18 @@ func (c *RideController) GetRides(ctx iris.Context) {
 func (c *RideController) GetRideById(ctx iris.Context) {
 	id := ctx.Params().Get("id")
 
-	var ride Ride
-	c.DB.First(&ride, "id=?", id)
+	ride, err := c.repo.GetRideById(id)
+	if err != nil {
+		ctx.StatusCode(iris.StatusInternalServerError)
+		_, _ = ctx.JSON(&Response{
+			Success: false,
+			Data: Err{
+				Code:    "SERVER_ERROR",
+				Message: "Unknown error",
+			},
+		})
+		return
+	}
 
 	if ride.ID == 0 {
 		ctx.StatusCode(iris.StatusBadRequest)

@@ -40,8 +40,9 @@ func tearDown() {
 }
 
 func TestNewApp(t *testing.T) {
+	repository := NewRepository(db)
 
-	controller := NewController(iris.New(), db)
+	controller := NewController(iris.New(), repository)
 	e := httptest.New(t, controller.app)
 
 	ride := &Ride{
