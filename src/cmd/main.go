@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"go/src/ride"
+	"go/src/note"
 
 	"gorm.io/gorm"
 
@@ -15,19 +15,31 @@ func main() {
 	app := New()
 
 	// Open a new connection to our sqlite database.
+	// Note the db configuration are hardcoded due to limit timeframe
 	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 	if err != nil {
 		panic("Failed to open the SQLite database.")
 	}
 
-	db.AutoMigrate(&ride.Ride{})
+	err = db.Debug().AutoMigrate(&note.Note{}, &note.Tag{})
+	if err != nil {
+		fmt.Printf("Failed to migrate db %v\n", err)
+	}
 
-	repository := ride.NewRepository(db)
+	// newNote := &note.Note{Content: "Test"}
+	// tag := note.Tag{Name: "Hihi"}
+	// newNote.Tags = []note.Tag{tag}
+
+	// db.Debug().Create(&newNote)
+	// n := db.Debug().First(&newNote)
+	// fmt.Printf("note %v\n", n)
+
+	repository := note.NewRepository(db)
 
 	// Register APIs
-	ride.NewController(app, repository)
+	note.NewController(app, repository)
 
-	_ = app.Run(iris.Addr(fmt.Sprintf("%s:%d", "localhost", 8010)))
+	_ = app.Run(iris.Addr(fmt.Sprintf("%s:%d", "localhost", 8000)))
 }
 
 // New Initiate the HTTP application
