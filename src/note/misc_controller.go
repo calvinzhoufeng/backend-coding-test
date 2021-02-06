@@ -24,14 +24,19 @@ func (c *NoteController) GetNotesByTag(ctx iris.Context) {
 	if err != nil {
 		ctx.StatusCode(iris.StatusInternalServerError)
 		_, _ = ctx.JSON(&Err{
-			ID:      "SERVER_ERROR",
+			ID:      0,
 			Message: "Unknown error",
 		})
 		return
 	}
 
+	notesDto := make([]*NoteDto, 0)
+	for _, note := range notes {
+		notesDto = append(notesDto, note.ToDto())
+	}
+
 	ctx.StatusCode(iris.StatusOK)
-	_, _ = ctx.JSON(&notes)
+	_, _ = ctx.JSON(notesDto)
 	return
 }
 
@@ -48,7 +53,7 @@ func (c *NoteController) GetAllTags(ctx iris.Context) {
 	if err != nil {
 		ctx.StatusCode(iris.StatusInternalServerError)
 		_, _ = ctx.JSON(&Err{
-			ID:      "SERVER_ERROR",
+			ID:      0,
 			Message: "Unknown error",
 		})
 		return
@@ -80,7 +85,7 @@ func (c *NoteController) GenFunnyNote(ctx iris.Context) {
 	if err != nil {
 		ctx.StatusCode(iris.StatusInternalServerError)
 		_, _ = ctx.JSON(&Err{
-			ID:      "REMOTE_SERVER_ERROR",
+			ID:      0,
 			Message: "Unknown error",
 		})
 		return
@@ -99,5 +104,5 @@ func (c *NoteController) GenFunnyNote(ctx iris.Context) {
 
 	log.Debug().Msgf("Create a random note %v\n", n)
 	ctx.StatusCode(iris.StatusOK)
-	_, _ = ctx.JSON(&n)
+	_, _ = ctx.JSON(n.ToDto())
 }

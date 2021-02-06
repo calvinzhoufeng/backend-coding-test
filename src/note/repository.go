@@ -8,10 +8,12 @@ import (
 // Repository is the interface can be used in DI
 type Repository interface {
 	CreateNote(note Note) (Note, error)
-	GetNotes(page int, pageSize int) ([]Note, error)
+	GetNotesWithPagination(page int, pageSize int) ([]Note, error)
+	GetNotes() ([]Note, error)
 	GetNoteById(id int) (Note, error)
 	UpdateNoteById(note Note) error
 	DeleteNoteById(id int) error
+	DeleteAllNotes() error
 
 	GetNotesByTag(tag string, page int, pageSize int) ([]Note, error)
 	GetAllTags() ([]Tag, error)
@@ -31,7 +33,7 @@ func NewRepository(db *gorm.DB) Repository {
 
 // CreateNote is to create a new Note
 func (r *RepositoryImpl) CreateNote(note Note) (Note, error) {
-	log.Debug().Msgf("to be added %v", note)
+	// log.Debug().Msgf("to be added %v", note)
 
 	r.DB.Create(&note)
 
@@ -47,8 +49,17 @@ func (r *RepositoryImpl) UpdateNoteById(note Note) error {
 	return r.DB.Error
 }
 
+// GetNotes Get all notes
+// This is only used for perforamnce testing and it didn't join tables
+func (r *RepositoryImpl) GetNotes() ([]Note, error) {
+	var notes []Note
+	r.DB.Find(&notes)
+
+	return notes, r.DB.Error
+}
+
 // GetNotes Get all notes from db per page number and pagesize
-func (r *RepositoryImpl) GetNotes(page int, pageSize int) ([]Note, error) {
+func (r *RepositoryImpl) GetNotesWithPagination(page int, pageSize int) ([]Note, error) {
 	var notes []Note
 	r.DB.Scopes(Paginate(page, pageSize)).Find(&notes)
 
@@ -59,7 +70,15 @@ func (r *RepositoryImpl) GetNotes(page int, pageSize int) ([]Note, error) {
 func (r *RepositoryImpl) GetNotesByTag(tag string, page int, pageSize int) ([]Note, error) {
 	log.Debug().Str("tag", tag).Msg("Get notes by tag")
 	var notes []Note
-	r.DB.Debug().Preload("Tags", "name = ?", tag).Find(&notes)
+	// TODO: There is a bug here that Preload tags with null pointer exception
+	r.DB.
+		// Debug().
+		Joins("JOIN note_tags on note_tags.note_id = notes.id").
+		Joins("JOIN tags on note_tags.tag_name = tags.name").
+		// Preload("tags").
+		Where("tags.name = ?", tag).
+		Group("notes.id").
+		Find(&notes)
 
 	return notes, r.DB.Error
 }
@@ -67,13 +86,24 @@ func (r *RepositoryImpl) GetNotesByTag(tag string, page int, pageSize int) ([]No
 // GetNote by Id from db
 func (r *RepositoryImpl) GetNoteById(id int) (Note, error) {
 	var note Note
-	r.DB.First(&note, "id=?", id)
+	log.Debug().Int("id", id).Msg("Retrieve note by id")
+	r.DB.
+		// Debug().
+		Where("notes.id = ?", id).Preload("Tags").First(&note)
 	return note, r.DB.Error
 }
 
-// GetNotes Get all notes from db per page number and pagesize
+// DeleteNoteById remove a note by Id
 func (r *RepositoryImpl) DeleteNoteById(id int) error {
 	r.DB.Where("id = ?", id).Delete(&Note{})
+
+	return r.DB.Error
+}
+
+// DeleteAllNotes is only for unit testing
+func (r *RepositoryImpl) DeleteAllNotes() error {
+	r.DB.Unscoped().Where("1=1").Delete(&Tag{})
+	r.DB.Unscoped().Where("1=1").Delete(&Note{})
 
 	return r.DB.Error
 }

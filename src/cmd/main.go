@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"go/src/note"
+	"time"
 
-	"gorm.io/gorm"
-
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/kataras/iris"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -16,10 +17,19 @@ func main() {
 
 	// Open a new connection to our sqlite database.
 	// Note the db configuration are hardcoded due to limit timeframe
-	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
+	// db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{
+	// 	Logger: logger.Default.LogMode(logger.Silent),
+	// })
+	dsn := "root:root@tcp(127.0.0.1:3306)/mysql?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("Failed to open the SQLite database.")
 	}
+
+	sqlDB, err := db.DB()
+	sqlDB.SetConnMaxLifetime(time.Minute * 3)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetMaxIdleConns(10)
 
 	err = db.Debug().AutoMigrate(&note.Note{}, &note.Tag{})
 	if err != nil {

@@ -6,6 +6,6 @@ type CreateNoteRequest struct {
 }
 
 type Err struct {
-	ID      string `json:"id"`
+	ID      int    `json:"id"`
 	Message string `json:"message"`
 }

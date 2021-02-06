@@ -8,6 +8,7 @@ require (
 	github.com/ajg/form v1.5.1 // indirect
 	github.com/flosch/pongo2 v0.0.0-20200913210552-0d938eb266f3 // indirect
 	github.com/gavv/monotime v0.0.0-20190418164738-30dba4353424 // indirect
+	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/imkira/go-interpol v1.1.0 // indirect
@@ -32,6 +33,7 @@ require (
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
+	golang.org/dl v0.0.0-20210204224843-1557c60ec592 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/sqlite v1.1.3
