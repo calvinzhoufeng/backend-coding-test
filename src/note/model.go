@@ -5,9 +5,9 @@ import (
 )
 
 type NoteDto struct {
-	ID int	`json:"id"`
-	Content string	`json:"content"`
-	Tags []string	`json:"tags"`
+	ID      uint     `json:"id"`
+	Content string   `json:"content"`
+	Tags    []string `json:"tags"`
 }
 
 func (n *Note) ToDto() *NoteDto {
@@ -20,22 +20,22 @@ func (n *Note) ToDto() *NoteDto {
 	}
 
 	return &NoteDto{
-		ID: n.ID,
+		ID:      n.ID,
 		Content: n.Content,
-		Tags: tags,
+		Tags:    tags,
 	}
 }
 
 type Note struct {
 	gorm.Model
-	ID      int `gorm:"primary_key, AUTO_INCREMENT"`
+	ID      uint `gorm:"primary_key, AUTO_INCREMENT"`
 	Content string
-	Tags    []Tag `gorm:"many2many:note_tags;"`
+	Tags    []Tag `gorm:"many2many:note_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }
 
 type Tag struct {
 	gorm.Model
-	ID    int `gorm:"primary_key, AUTO_INCREMENT"`
-	Name  string	`gorm:"primaryKey"`
-	Notes []Note `gorm:"many2many:note_tags;"`
+	ID    uint   `gorm:"primary_key, AUTO_INCREMENT"`
+	Name  string `gorm:"primaryKey"`
+	Notes []Note `gorm:"many2many:note_tags;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

@@ -8,7 +8,6 @@ import (
 // Repository is the interface can be used in DI
 type Repository interface {
 	CreateNote(note Note) (Note, error)
-	GetNotesWithPagination(page int, pageSize int) ([]Note, error)
 	GetNotes() ([]Note, error)
 	GetNoteById(id int) (Note, error)
 	UpdateNoteById(note Note) error
@@ -42,7 +41,7 @@ func (r *RepositoryImpl) CreateNote(note Note) (Note, error) {
 
 // CreateNote is to create a new Note
 func (r *RepositoryImpl) UpdateNoteById(note Note) error {
-	log.Debug().Int("note", note.ID).Msg("Update note by id")
+	log.Debug().Uint("note", note.ID).Msg("Update note by id")
 
 	r.DB.Save(&note)
 
@@ -102,8 +101,8 @@ func (r *RepositoryImpl) DeleteNoteById(id int) error {
 
 // DeleteAllNotes is only for unit testing
 func (r *RepositoryImpl) DeleteAllNotes() error {
-	r.DB.Unscoped().Where("1=1").Delete(&Tag{})
 	r.DB.Unscoped().Where("1=1").Delete(&Note{})
+	r.DB.Unscoped().Where("1=1").Delete(&Tag{})
 
 	return r.DB.Error
 }
